@@ -1,6 +1,8 @@
-# zinger
+# mingler
 
 > A Vue.js project
+live demo can be found here:
+https://minglers.herokuapp.com/
 
 ## Build Setup
 
