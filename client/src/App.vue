@@ -1,6 +1,7 @@
 <template>
   <div id="app" class="container">
     <MainNav class="navbar" />
+    <button class="button" @click="goToCard">goToCard</button>
     <router-view></router-view>
   
   </div>
@@ -19,10 +20,12 @@ export default {
       this.getValsFromStorage() ;
     },
     methods: {
+      goToCard(){
+          this.$router.push('card');
+      },
         getValsFromStorage(){
             var msg = {dommy:'dommy'}
             this.$store.dispatch({ type: GET_VALS_FROM_STORAGE, msg: msg })
-
         }
     },
   components: {
