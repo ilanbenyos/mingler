@@ -1,7 +1,8 @@
 <template>
   <transition name="fade">
     <!--<div v-if="user">-->
-    <div v-if="user" class="main">
+    <div v-if="currUser" class="main">
+    <!--<div  class="main">-->
       <div id="browse-div" class="browse flex-center" ref="playground">
         <!--v-if="drageVals.showUser && nextUser"-->
         <!--{{nextUser}}-->
@@ -40,12 +41,12 @@
               </h4>
               <!--<div class="expand" @click.stop="expand = !expand">-->
             </div>
-            <div v-if="user" class="expand">
+            <div v-if="currUser" class="expand">
               <transition name="slide-fade">
                 <div class="description" v-show="expand" @click="expand = !expand">
                   <!--dhsbt<br>rtvhtrvsyr<br>yceywecy<br>we4tr3tq<br>34tq4t-->
-                  <h4>{{ user.name }}, {{ newDate - user.birth }}</h4>
-                  <p> {{user.description}}</p>
+                  <h4>{{ currUser.name }}, {{ newDate - currUser.birth }}</h4>
+                  <p> {{currUser.description}}</p>
                 </div>
               </transition>
   
@@ -60,8 +61,16 @@
       <section class="actions">
         <a href="#" @click.prevent="launchLikeAction($event, 'left')">
           <md-icon class="material-icons md-size-2x dislike">highlight_off</md-icon>
+          {{thisUser.likesCount.disLikes}}
+          <div v-if="thisUser && thisUser.likesCount" ></div>
+        </a>
+        <a @click.prevent="initLikes()">
+          <md-icon class="material-icons md-size-2x middle">highlight_on</md-icon>
+          {{thisUser.likesCount.total}}
         </a>
         <a @click.prevent="launchLikeAction($event, 'right')">
+          {{thisUser.likesCount.likes}}
+        <!--{{thisUser.likesCount.likes}}-->
           <md-icon class="material-icons md-size-2x like heart">favorite</md-icon>
         </a>
       </section>
@@ -110,6 +119,8 @@ export default {
       userIdx: 0,
       currUser: '',
       nextUser: '',
+      // thisUser:this.$store.getters.fetchCurrUser,
+      // likes: {likes:0, dislikes:0},
 
       drageVals: {
         dragStatus: 'init',
@@ -169,10 +180,18 @@ export default {
               that.pushUsers();
           // }, 540);
       }
+    },
+    thisUser: function (updatedUser) {
+        console.log('BROWSE.watch.thisUser',this.$store.getters.fetchCurrUser);
+       this.thisUser = this.$store.getters.fetchCurrUser;
     }
   },
 
   computed: {
+    thisUser(){
+      return this.$store.getters.fetchCurrUser
+    },
+
     users() {
       var users11 = this.$store.getters.fetchUsersBrowsed;
       console.log('browse: computed - users:', users11);
@@ -186,10 +205,9 @@ export default {
     beforeDestroy: function () {
       window.removeEventListener('resize', this.initEl)
     },
-    user() {
-      return this.currUser;
-    },
-
+    // user() {
+    //   return this.currUser;
+    // },
     newMatch() {
       return this.newMatchFlag && this.$store.getters.fetchLastMatch;
     }
@@ -398,6 +416,10 @@ export default {
       console.log('Browse: MOVE to edit')
       this.$router.push('Edit')
     },
+    initLikes(){
+      const msg = { id1: this.$store.state.user.currUser.id, opt: 'initLikes' }
+      this.$store.dispatch({ type: LIKE, data: msg })
+    },
     launchLikeAction(e, direction) {
       if (this.expand) {
         this.expand = false;
@@ -417,7 +439,7 @@ export default {
     userDislike(e) {
       if (this.drageVals.dragStatus != 'clicked') return;
       console.log('Browse: before DISLIKE! id:', this.userIdx, this.users.length)
-      const msg = { id1: this.$store.state.user.currUser.id, id2: this.user.id, bul: false }
+      const msg = { id1: this.$store.state.user.currUser.id, id2: this.currUser.id, opt: 'dislike' }
       this.$store.dispatch({ type: LIKE, data: msg })
       console.log('Browse:  DISLIKE! id:', this.userIdx, this.users.length)
       var el = document.getElementsByClassName("fly-out")[0];
@@ -429,7 +451,7 @@ export default {
 
       if (this.drageVals.dragStatus != 'clicked') return;
       console.log('Browse: before LIKE! id:', this.userIdx, this.users.length)
-      const msg = { id1: this.$store.state.user.currUser.id, id2: this.user.id, bul: true }
+      const msg = { id1: this.$store.state.user.currUser.id, id2: this.currUser.id, opt: 'like' }
       this.$store.dispatch({ type: LIKE, data: msg })
       console.log('Browse:  LIKE! id:', this.userIdx, this.users.length)
 
@@ -564,12 +586,16 @@ export default {
   justify-content: space-between;
   flex-wrap:wrap;
   background: lightgrey;
+    a{
+    cursor: pointer;
+    overflow: hidden;
+    // outline:1px solid red;
+  }
   .like {
     left: 2em;
-
     color: red;
     opacity: 0.9;
-    cursor: pointer;
+    // cursor: pointer;
     &:hover {
       opacity: 1;
     }
@@ -578,7 +604,7 @@ export default {
     right: 2em;
     color: rgba(124, 1, 87, 1);
     opacity: 0.8;
-    cursor: pointer;
+    // cursor: pointer;
     &:hover {
       opacity: 1;
     }

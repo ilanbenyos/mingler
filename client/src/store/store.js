@@ -15,41 +15,6 @@ export const GET_VALS_FROM_STORAGE = 'GET_VALS_FROM_STORAGE';//
 
 import service from '../services/service'
 
-// usersMatched:  [
-//   {
-//     id: 1, name: 'lora', gender: 'f', description: 'like to love',
-//     userName: '555', password: '555', likes: [2], dislikes: [36, 4, 5], matches: []
-//   },
-//   {
-//     id: 2, name: 'chen', gender: 'f', description: 'love to love',
-//     userName: '222', password: '222', likes: [], dislikes: [45], matches: []
-//   },
-//   {
-//     id: 36, name: 'asaf', gender: 'm', description: 'like assaf',
-//     userName: '333', password: '333', likes: [2], dislikes: [1, 5], matches: []
-//   },
-//   {
-//     id: 45, name: 'ilan', gender: 'm', description: 'like to lora',
-//     userName: '444', password: '444', likes: [2, 36], dislikes: [1, 45, 5], matches: []
-//   }
-// ],
-// usersBrowsed: [
-//   {
-//     id: 1, name: 'lora', gender: 'f', description: 'like to love',
-//     userName: '555', password: '555', likes: [2], dislikes: [36, 4, 5], matches: []
-//   },
-//   {
-//     id: 45, name: 'ilan', gender: 'm', description: 'like to lora',
-//     userName: '444', password: '444', likes: [2, 36], dislikes: [1, 45, 5], matches: []
-//   }
-// ],
-
-//{
-// id: 1, name: 'lora', gender: 'f', description: 'like to love',
-// userName: '111', password: '111', likes: { '1': true, '2': false }, dislikes: [11], matches: [],
-// lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-1.jpg']
-//},
-// currUser: {},
 
 const state = {
   usersMatched: '',
@@ -130,6 +95,9 @@ const mutations = {
   },
   [LIKE](state, payload) {
     state.currUser = payload.user.user1;
+    console.log('store.mutation.LIKE.likesCount:' , payload.user.user1.likesCount)
+    console.log('+++++++++++++++++++++++' )
+    // localStorage.currUser = state.currUser;
     if (payload.user.user2) state.lastMatch = payload.user.user2; else state.lastMatch = null;
   },
   [LOG_IN](state, { user }) {
@@ -199,9 +167,9 @@ const mutations = {
     console.log('store.usersBrowsed: ', state.usersMatched)
   },
   [GET_USER](state, { data }) {
-    console.log('store.mutation.GET_USER: ', data)
+    // console.log('store.mutation.GET_USER: ', data)
     state.user2 = data
-    console.log('store.user2: ', state.user2)
+    // console.log('store.user2: ', state.user2)
   },
   [GET_VALS_FROM_STORAGE](state, { msg }) {
     console.log('store.mutation.GET_VALS_FROM_STORAGE: ', msg)

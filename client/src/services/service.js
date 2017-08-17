@@ -115,9 +115,11 @@ const logOut = msg => {
 const like = msg => {
       console.log('service.like1 message:',msg);
  // return axios.put('http://localhost:3003/likeUser', msg)
+   
    return axios.put(baseUrl+'/likeUser', msg)
    .then(function (response) {
       console.log('service.like2:', response);
+     
       return response.data;
     })
 }

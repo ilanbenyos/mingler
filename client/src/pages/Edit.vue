@@ -135,7 +135,9 @@ export default {
         userName: '', // TBD replace all userName with login
         // login: '', // TBD replace all userName with login
         password: '',
-        email: ''
+        email: '',
+        likeCount:0,
+        disLikeCount:{likes:0,dislikes:0}
       }
     }
   },

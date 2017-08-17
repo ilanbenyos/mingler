@@ -104,16 +104,25 @@ app.put('/likeUser', function (req, res) {
 	var id2 = req.body.data.id2;
 	var user1 = getUserById(id1);
 	var user2 = getUserById(id2);
-	var bul = req.body.data.bul
+	var opt = req.body.data.opt
+	// var initLikes = req.body.data.initLikes;
 	//console.log('LIKE2: user1, user2, bul', user1, user2, bul);
-	user1.likes[user2.id] = bul; // bul === true: like , false:dislike 
+	 if (opt === 'initLikes'){
+		initLikes(id1);
+		res.json({ user1 });
+		return;
+	}
+	
+	
+	user1.likes[user2.id] = opt; // bul === true: like , false:dislike 
 	//console.log('LIKE3: user1 likes', user1.likes);
-	if (bul === true) {//check for match
+	if (opt === 'like') {//check for match
 		//console.log('LIKE: user clicked "LIKE" ');
 		if (user2.likes[user1.id] === true) { //there is a match!
 			user1.matches[user2.id] = true;
 			user2.matches[user1.id] = true;
 			console.log('LIKE: matches!!, reurning both users:', user1, user2);
+			countUserLikes(id1);
 			res.json({ user1, user2 });
 			//return;
 		}
@@ -121,6 +130,7 @@ app.put('/likeUser', function (req, res) {
 			user1.matches[user2.id] = false;
 			user2.matches[user1.id] = false;
 		//	console.log('LIKE: NO matches!!, returning USER1: ', user1);
+			countUserLikes(id1)
 			res.json({ user1 });
 		}
 	}
@@ -131,12 +141,40 @@ app.put('/likeUser', function (req, res) {
 			user2.matches[user1.id] = false;
 		//	console.log('LIKE: there was a match before, now reset it to unmatch:', user1);
 		}
+		countUserLikes(id1);
 		res.json({ user1 });
 	}
 	//console.log('LIKE: End of LIKE function');
 	res.end();
 });
 
+//====================================================================================
+function initLikes(id){
+	var user = getUserById(id);
+	user.likes = {};
+	user.likesCount = {likes:0,disLikes:0, total :users.length};
+	for (var key in user.matches){
+	// for (var matchId = 0; matchId < user.matches.length; matchId++) {
+		var match = getUserById(+key);
+		delete match.matches[id];
+	}
+}
+//====================================================================================
+
+function countUserLikes(id) {
+	var user = getUserById(id);
+	var tempLikes = {likes:0,disLikes:0, total :users.length};
+	if(!user.likesCount) user.likesCount = tempLikes;
+	for (var key in user.likes){
+		(user.likes[key] ==='like')? tempLikes.likes++: tempLikes.disLikes++;
+	}
+	// for (key in user.disLikes){
+	// 	tempLikes.disLikes++;
+	// }
+
+
+	user.likesCount = tempLikes;
+}
 //====================================================================================
 function getUserIdxById(id) {
 	var index = users.findIndex((user) => user.id === id);
@@ -170,22 +208,22 @@ function restartUsers() {
 	users = [
 		{
 			id: 1, name: 'lora', gender: 'Female', birth: '1990', description: 'like to love',chatUser:null,socket:null,
-			userName: '111', password: '111', likes: { '2': true }, dislikes: { '11': false }, matches: {2:true},
-			lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-1.jpg']
+			userName: '111', password: '111', likes: { '2': true }, dislikes: { '11': false },likesCount:{}, matches: {2:true},
+			lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-1.jpg', ]
 		},
 		{
 			id: 2, name: 'chen', gender: 'Female', birth: '1991', description: 'love to love',chatUser:null,socket:null,
-			userName: '222', password: '222', likes: {'1': true}, dislikes: {  }, matches: {1:true},
+			userName: '222', password: '222', likes: {'1': true}, dislikes: {  },likesCount:{}, matches: {1:true},
 			lastLine: "hola??", photos: ['http://dreamatico.com/data_images/woman/woman-8.jpg']
 		},
 		{
 			id: 3, name: 'keren', gender: 'Female', birth: '1995', description: 'love to love',chatUser:null,socket:null,
-			userName: '333', password: '333', likes: { '1': true }, dislikes: { '45': false }, matches: {},
+			userName: '333', password: '333', likes: { '1': true }, dislikes: { '45': false },likesCount:{}, matches: {},
 			lastLine: "daaa??", photos: ['http://dreamatico.com/data_images/woman/woman-3.jpg']
 		},
 		{
 			id: 4, name: 'inbar', gender: 'Female', birth: '1996', description: 'love to love',chatUser:null,socket:null,
-			userName: '444', password: '444', likes: { '2': true, '11': false }, dislikes: { '4': false }, matches: {},
+			userName: '444', password: '444', likes: { '2': true, '11': false }, dislikes: { '4': false },likesCount:{}, matches: {},
 			lastLine: "dooo??", photos: ['http://dreamatico.com/data_images/woman/woman-4.jpg']
 		},
 		{
@@ -195,7 +233,7 @@ function restartUsers() {
 		},
 		{
 			id: 12, name: 'ilana', gender: 'Female', birth: '1998', description: 'like to lora', userName: '666',chatUser:null,socket:null,
-			password: '666', likes: { '1': true, '11': true, '12': true, '2': false }, dislikes: { '3': false }, matches: {}, lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-7.jpg']
+			password: '666', likes: { '1': true, '11': true, '12': true, '2': false }, dislikes: { '3': false },likesCount:{}, matches: {}, lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-7.jpg']
 		}
 	]
 	cl('function - restartUsers: ', users.length)
